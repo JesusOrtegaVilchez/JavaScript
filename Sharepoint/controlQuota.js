@@ -94,8 +94,6 @@ $(document).ready(function () { //importante añadir libreria jquery
                     var totalSize = data.d.StorageMetrics.TotalSize;
                     listTotalSize.push(totalSize);
                     webtotalSize += Number(totalSize);
-                   
-                   
                     $('#contenedor').html(webtotalSize);
                     
                 },
@@ -115,7 +113,7 @@ $(document).ready(function () { //importante añadir libreria jquery
 		else{
 			reject(Error("Algo salio mal");
 		}
-        //setTimeout(alert(webtotalSize),300000);
+        
 	});
         Promise.all(promesas).then(function() {
             alert(webtotalSize);
