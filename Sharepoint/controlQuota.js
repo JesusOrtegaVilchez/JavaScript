@@ -11,9 +11,10 @@ $(document).ready(function () { //importante añadir libreria jquery
     var web_sTotalSize = 0;
     var objWebsColl = [];
     var listTotalSizeWebs = [];
+    var promesas = [];
     //var objSitesColl = [];
     var urlRelativa;
-      //var nameWeb = new SP.WebInformation.get_title();
+    //var nameWeb = new SP.WebInformation.get_title();
     function retrieveWebSiteProperties() {
         var clientContext = new SP.ClientContext.get_current();
         var url_p = "https://clouzy.sharepoint.com/sites/aletas";//get site
@@ -69,7 +70,7 @@ $(document).ready(function () { //importante añadir libreria jquery
             //alert('La url del sitio es: '+ objListColl[x].Url);
         
     
-        function retrieveSubsites(){ //devuelve el nombre de la url de los subsitios
+        function retrieveSubsites(){ //devuelve el titulo y la url de los subsitios
         
         var enumerator = websColl.getEnumerator();
         while(enumerator.moveNext()){
@@ -91,30 +92,32 @@ $(document).ready(function () { //importante añadir libreria jquery
                 headers: { "Accept": "application/json; odata = verbose" },
                 success: function (data) {
                     var totalSize = data.d.StorageMetrics.TotalSize;
-                    //alert(totalSize);
-                    //setTimeout(alert(totalSize,2000));
                     listTotalSize.push(totalSize);
                     webtotalSize += Number(totalSize);
-                    //listTotalSizeWebs.push(webtotalSize);
-                    objWebsColl[indice].Size = webtotalSize;
-                   //setTimeout(alert('+'\n'+ 'Tamaño del subsitio: ' + webtotalSize,2000));
+                   
+                   
                     $('#contenedor').html(webtotalSize);
                     
                 },
                 error: function (sender, args) {
-                    alert('Request failed. ' + args +
-							'\n' + sender.responseJSON.error.message.value);
+                    alert('Request failed. ' + args +'\n' + sender.responseJSON.error.message.value);
                 }
             })
         }
 
-        var promesas = [];
+        var p = new Promise(function(resolve,reject){
         for (var j = 0; j < objListColl.length; j++) {
-            promesas.push(aPI_Request(objListColl[j].Url,j));
+            promesas.push(aPI_Request(objListColl[j].Url));
         };
+		if(promesas.length == listTotalSize.length){
+			resolve("Se han introducido los valores correctamente);
+		}
+		else{
+			reject(Error("Algo salio mal");
+		}
         //setTimeout(alert(webtotalSize),300000);
-
-        Promise.all(promesas).then(function () {
+	});
+        Promise.all(promesas).then(function() {
             alert(webtotalSize);
         });
 
