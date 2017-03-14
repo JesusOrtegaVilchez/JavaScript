@@ -11,10 +11,10 @@ $(document).ready(function () { //importante añadir libreria jquery
     var web_sTotalSize = 0;
     var objWebsColl = [];
     var listTotalSizeWebs = [];
-    var promesas = [];
+    var promesas= [];
     //var objSitesColl = [];
     var urlRelativa;
-    //var nameWeb = new SP.WebInformation.get_title();
+      //var nameWeb = new SP.WebInformation.get_title();
     function retrieveWebSiteProperties() {
         var clientContext = new SP.ClientContext.get_current();
         var url_p = "https://clouzy.sharepoint.com/sites/aletas";//get site
@@ -70,7 +70,7 @@ $(document).ready(function () { //importante añadir libreria jquery
             //alert('La url del sitio es: '+ objListColl[x].Url);
         
     
-        function retrieveSubsites(){ //devuelve el titulo y la url de los subsitios
+        function retrieveSubsites(){ //devuelve el nombre de la url de los subsitios
         
         var enumerator = websColl.getEnumerator();
         while(enumerator.moveNext()){
@@ -82,23 +82,30 @@ $(document).ready(function () { //importante añadir libreria jquery
     }
     
     retrieveSubsites();
-    /
+    
    
         
        function aPI_Request(urlRelativa) { //peticion al servicio web que me devuelve el tamaño en bytes de cada lista o biblioteca que contenga un sitio
-            $.ajax({			/* IMPORTANTE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! COMILLAS SIMPLES Y DOBLES EN ESTE ORDEN, SINO FALLA!!!!!!*/
+            $.ajax({			/* IMPORTANTE!!!!!!!!!!!!!!!!!!!!!! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! COMILLAS SIMPLES Y DOBLES EN ESTE ORDEN, SINO FALLA!!!!!!*/
                 url: _spPageContextInfo.webAbsoluteUrl + "/_api/web/getFolderByServerRelativeUrl(\'" + urlRelativa + "\')?$select=StorageMetrics&$expand=StorageMetrics",
                 type: "GET", /* NO ES "METHOD" ES "TYPE"*/
                 headers: { "Accept": "application/json; odata = verbose" },
                 success: function (data) {
                     var totalSize = data.d.StorageMetrics.TotalSize;
+                    //alert(totalSize);
+                    //setTimeout(alert(totalSize,2000));
                     listTotalSize.push(totalSize);
                     webtotalSize += Number(totalSize);
-                    $('#contenedor').html(webtotalSize);
+                    //listTotalSizeWebs.push(webtotalSize);
+                    //objWebsColl[indice].Size = webtotalSize;
+                   //setTimeout(alert('+'\n'+ 'Tamaño del subsitio: ' + webtotalSize,2000));
+                    $('#contenedor').html("Tamaño del subsitio: " + webtotalSize +" bytes" + "  Subsitio: "+_spPageContextInfo.webRelativeUrl);
+                    //$('#nombre').html("Subsitio: "+ _spPageContextInfo.webAbsoluteUrl);
                     
                 },
                 error: function (sender, args) {
-                    alert('Request failed. ' + args +'\n' + sender.responseJSON.error.message.value);
+                    alert('Request failed. ' + args +
+							'\n' + sender.responseJSON.error.message.value);
                 }
             })
         }
@@ -107,16 +114,22 @@ $(document).ready(function () { //importante añadir libreria jquery
         for (var j = 0; j < objListColl.length; j++) {
             promesas.push(aPI_Request(objListColl[j].Url));
         };
-		if(promesas.length == listTotalSize.length){
-			resolve("Se han introducido los valores correctamente);
-		}
-		else{
-			reject(Error("Algo salio mal");
-		}
-        
-	});
-        Promise.all(promesas).then(function() {
+        if(promesas.length > 0){//condicion de parada para que se ejecute correctamente
+            resolve("se han introducido los valores");
+        } 
+            else{
+                reject(Error("algo salio mal"));
+            }// devuelve el tipo de error
+        //setTimeout(alert(webtotalSize),300000);
+        });  
+
+        p.then(function(response) {
+            console.log(response);
             alert(webtotalSize);
+        }, function(error){
+            console.log(error);
+        
+
         });
 
        /* function arrayPromesas(){
@@ -147,18 +160,21 @@ $(document).ready(function () { //importante añadir libreria jquery
                     console.log(response);
                     //colocar la suma
                         alert("tamaño del array: "+listTotalSize[0]);
+
                 }, function(error){
                     console.log(error);
                 })
         }
+
+
             
         }
         promesa();
 */
         
-    
     }
-
+    
+    
     function onQueryFailed(sender,args) {
         console.log(args.get_message());
     }
@@ -166,3 +182,4 @@ $(document).ready(function () { //importante añadir libreria jquery
 
 
 });
+
